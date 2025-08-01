@@ -60,7 +60,7 @@ while True:
 
         # Check if stable for 4 seconds# Check if stable for 2 seconds
         if most_common == prev_prediction:
-            if time.time() - stable_start_time >= 3:
+            if time.time() - stable_start_time >= 4:
                 if most_common.lower() == "space":
                     if sentence == "" or sentence[-1] != " ":
                         sentence += " "
