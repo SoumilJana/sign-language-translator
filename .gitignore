@@ -1,0 +1,14 @@
+# Ignore virtual environments
+venv/
+Soumil/venv/
+__pycache__/
+*.pyc
+
+# Ignore large binaries
+*.dll
+*.pyd
+*.so
+
+# Ignore system files
+.DS_Store
+Thumbs.db
