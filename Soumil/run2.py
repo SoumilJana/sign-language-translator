@@ -7,12 +7,8 @@ from collections import deque, Counter
 import pyttsx3  # Text-to-Speech
 
 # Load model
-model_dict = pickle.load(open('model.p', 'rb'))
+model_dict = pickle.load(open('model.p', 'rb'))  # Make sure this file exists
 model = model_dict['model']
-
-# TTS setup
-tts = pyttsx3.init()
-tts.setProperty('rate', 150)
 
 # MediaPipe setup
 mp_hands = mp.solutions.hands
@@ -47,6 +43,16 @@ stable_start_time = time.time()
 sentence = ""
 prediction_history = deque(maxlen=20)
 prev_frame_time = time.time()
+
+# Speak function with reinit
+def speak(text):
+    try:
+        engine = pyttsx3.init()
+        engine.setProperty('rate', 110)
+        engine.say(text)
+        engine.runAndWait()
+    except Exception as e:
+        print(f"❌ TTS Error: {e}")
 
 while True:
     ret, frame = cap.read()
@@ -110,8 +116,7 @@ while True:
     elif key == 13:  # Enter key (↵)
         if sentence.strip():
             print("\n🟢 Enter Pressed! Final Sentence:", sentence)
-            tts.say(sentence)
-            tts.runAndWait()
+            speak(sentence)
             with open("output_sentence.txt", "w") as f:
                 f.write(sentence)
             print("💾 Sentence saved to: output_sentence.txt")
