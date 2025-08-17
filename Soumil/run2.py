@@ -124,6 +124,10 @@ while True:
             prediction_history.clear()
             stable_start_time = time.time()
             prev_prediction = ""
+    elif key == 8:  # Backspace/Delete key
+        if sentence:
+            sentence = sentence[:-1]
+            print(f"⬅️ Deleted last letter → Sentence: {sentence}")
 
 # Cleanup
 cap.release()

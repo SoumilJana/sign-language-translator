@@ -1,0 +1,21 @@
+Backspace/Delete Sign – must-have for correcting mistakes while building words.
+
+Word Suggestions – predictive text from partial letters to speed up word formation.
+
+Error Handling + Auto-Correction – ensures robustness and fewer typos.
+
+PredictedWord + Confirmation Gesture (your new feature) – commit full words at once.
+
+Two-Hand/Common Word Gestures – shortcuts for frequent expressions.
+
+UI Development – integrate live camera, text display, start/stop, save/export.
+
+Broken Sentence → Correct Sentence (AI) – restructure user’s rough input into clean, grammatical output.
+
+Generative AI for Contextual Translation – add semantic meaning and natural phrasing on top.
+
+
+
+i want to add a line called "prediction" where the predicted word will be showed, and upon 
+giving a specific sign like "thumbs up" or "full hand", the word gets pushed into the sentence file
+if the predicted word is not correct, then the user continues to show signs as normal
