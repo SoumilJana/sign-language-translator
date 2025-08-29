@@ -69,6 +69,17 @@ pip install -r requirements.txt
 python backend/inference.py
 ```
 
+5. Run the backend model
+
+```bash
+python backend\runF2.py
+```
+6. Run the frontend skeleton
+
+```bash
+npm.cmd run dev
+```
+
 ---
 
 ## Installation
