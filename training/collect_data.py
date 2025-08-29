@@ -12,14 +12,14 @@ mp_drawing = mp.solutions.drawing_utils
 DATA_DIR = 'data'
 os.makedirs(DATA_DIR, exist_ok=True)
 
-# Ask user for which letter to record
-current_label = input("Enter the label for this gesture (e.g., A, B, space, clear): ").strip().lower()
-if not current_label.isalnum():
-    print("Invalid label. Please enter an alphanumeric name.")
+# Ask user for label
+current_label = input("Enter the label for this gesture (A-Z or 'space'): ").strip().lower()
+if not (current_label.isalpha() or current_label == "space"):
+    print("Invalid label. Use letters A-Z or 'space'.")
     exit()
 
-# Set number of samples to collect
-samples_per_label = int(input("How many samples do you want to collect? (e.g., 200): "))
+# Number of samples
+samples_per_label = int(input("Number of samples to collect (e.g., 200): "))
 collected = 0
 
 # Prepare label directory and starting index
@@ -30,7 +30,7 @@ start_idx = len(existing_files)
 
 # Start webcam
 cap = cv2.VideoCapture(0)
-print(f"\n📸 Starting data collection for: {current_label}\nPress 's' to save a sample, 'q' to quit early.")
+print(f"\n📸 Collecting data for: {current_label}. Press 's' to save, 'q' to quit.")
 
 while True:
     ret, frame = cap.read()
@@ -45,10 +45,7 @@ while True:
         hand_landmarks = result.multi_hand_landmarks[0]
         mp_drawing.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-        landmarks = []
-        for lm in hand_landmarks.landmark:
-            landmarks.append([lm.x, lm.y, lm.z])
-        landmarks = np.array(landmarks).flatten()
+        landmarks = np.array([[lm.x, lm.y, lm.z] for lm in hand_landmarks.landmark]).flatten()
 
         cv2.putText(frame, f'{current_label}: {collected}/{samples_per_label}', (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
@@ -56,19 +53,19 @@ while True:
         cv2.putText(frame, 'No hand detected', (10, 30),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 0, 255), 2)
 
-    cv2.imshow('Collecting Sign Data - Press S to save, Q to quit', frame)
+    cv2.imshow('Collecting Sign Data', frame)
     key = cv2.waitKey(1) & 0xFF
 
     if key == ord('s') and result.multi_hand_landmarks:
         np.save(os.path.join(label_dir, f'{start_idx + collected}.npy'), landmarks)
         collected += 1
         if collected >= samples_per_label:
-            print(f"\n✅ Done collecting {samples_per_label} samples for letter: {current_label}")
+            print(f"\n✅ Done collecting {samples_per_label} samples for '{current_label}'")
             break
     elif key == ord('q'):
-        print(f"\n⚠️ Collection manually stopped at {collected} samples for {current_label}")
+        print(f"\n⚠️ Collection stopped at {collected} samples for '{current_label}'")
         break
 
 cap.release()
 cv2.destroyAllWindows()
-print("\n🎉 Data collection complete! You can now use this data for training your model.")
+print("\n🎉 Data collection complete!")
