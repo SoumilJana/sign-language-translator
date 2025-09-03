@@ -37,7 +37,7 @@ print("Class weights:", class_weights)
 # Train MLP
 # ------------------------
 clf = MLPClassifier(
-    hidden_layer_sizes=(256, 128),
+    hidden_layer_sizes=(512, 256, 128),
     activation='relu',
     solver='adam',
     learning_rate_init=0.001,
