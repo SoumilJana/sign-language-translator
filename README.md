@@ -139,6 +139,5 @@ python backend/inference.py
 
 * [MediaPipe](https://mediapipe.dev/) – Hand tracking
 * [OpenCV](https://opencv.org/) – Computer vision utilities
-* Kaggle ASL Dataset contributors for providing training data
 
 ---
