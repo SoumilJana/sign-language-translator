@@ -9,11 +9,11 @@ import pyttsx3
 # ------------------------
 # Load model
 # ------------------------
-model_dict = pickle.load(open('model.p', 'rb'))
+model_dict = pickle.load(open('app/assets/model.p', 'rb'))
 model = model_dict['model']
 
 # Load label classes
-label_classes = np.load('label_classes.npy')
+label_classes = np.load('app/assets/label_classes.npy')
 
 # ------------------------
 # MediaPipe setup
