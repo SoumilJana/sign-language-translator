@@ -118,7 +118,7 @@ python app/main.py
 
 ## 👨‍💻 Author and Copyright
 
-> **Developed by:** [Soumil Jana](mailto:janasoumil1005@gmail.com)
+> **Developed by:** [Soumil Jana](mailto:janasoumil1005@gmail.com) \n
 > **All Rights Reserved.**
 
 ⚠️ **Usage Policy:**
