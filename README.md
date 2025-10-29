@@ -49,10 +49,15 @@ cd sign-language-translator
 
 2. Create and activate a virtual environment:
 
+It's highly recommened to use a virtual environment to manage dependencies
+
 ```bash
+#Create the environment
 python -m venv venv
+
 # Windows
 venv\Scripts\activate
+
 # macOS / Linux
 source venv/bin/activate
 ```
@@ -63,23 +68,10 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. Run inference:
-
+4. Run the application
 ```bash
-python backend/inference.py
+python app/main.py
 ```
-
-5. Run the backend model
-
-```bash
-python backend\runF2.py
-```
-6. Run the frontend skeleton
-
-```bash
-npm.cmd run dev
-```
-
 ---
 
 ## Installation
@@ -113,6 +105,14 @@ pip install -r requirements.txt
 
 <details>
   <summary>Click to expand usage instructions</summary>
+
+Once you have completed the installation and data setup, you can run the main application.
+
+python app/main.py
+
+
+This will launch the Kivy application, activate your webcam, and begin translating sign language gestures in real-time.
+
 
 ### 1. Training the Model
 
