@@ -57,10 +57,6 @@ python app/main.py
 
 ## 🧠 How It Works
 
-<p align="center">
-  <img src="docs/infographic_pipeline.png" width="750" alt="Sign Language Translator Workflow Infographic"/>
-</p>
-
 1. **Hand Detection:** MediaPipe identifies and tracks 3D hand landmarks.
 2. **Feature Extraction:** OpenCV processes frames and normalizes coordinates.
 3. **Prediction:** The neural network model classifies gestures into letters or words.
