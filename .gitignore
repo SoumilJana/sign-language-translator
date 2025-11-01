@@ -1,49 +1,23 @@
-# ----------------------
-# Python
-# ----------------------
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-*.pyd
-*.py[cod]
-*$py.class
-
-# Virtual environments
-venv/
-.env/
-.envrc
-*.venv
-
-# ----------------------
-# Data & Models
-# ----------------------
-# Raw datasets
-data/
-kaggle_asl_dataset/
-kaggle_asl_dataset_npy/
-
-# Model files & outputs
-*.npy
-model.p
-output_sentence.txt
-archive.zip
-
-# ----------------------
-# System / Editor Files
-# ----------------------
-.DS_Store
-Thumbs.db
-*.log
-
-# IDEs
+# VS Code metadata
 .vscode/
-.idea/
-*.sublime-workspace
-*.sublime-project
 
-# ----------------------
-# Misc / Backup
-# ----------------------
-*.bak
-*.swp
+# Python cache files
+__pycache__/
+app/__pycache__/
+
+# Virtual environment
+venv/
+
+# Ignore the data folder
+/data/
+
+# Build files and logs
+*.spec
+
+# Local data/output files
+output_sentence.txt
+*.npy
+to-do.txt
+
+# Local scripts
+run_auto.py

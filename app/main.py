@@ -7,6 +7,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 import pyttsx3
+from spellchecker import SpellChecker  
 
 from kivy.core.window import Window
 from kivy.clock import Clock, mainthread
@@ -32,6 +33,16 @@ class CameraScreen(BoxLayout):
         
         # --- Bind Keyboard Listener ---
         Window.bind(on_key_down=self._on_key_down)
+
+        # --- Autocorrect Setup ---
+        try:
+            self.spell = SpellChecker()
+            self.use_autocorrect = True
+            print("✅ Spellchecker loaded.")
+        except Exception as e:
+            print(f"⚠️ Could not load spellchecker: {e}")
+            self.spell = None
+            self.use_autocorrect = False
 
         # --- State variables for sign detection logic ---
         self.sentence = ""
@@ -77,32 +88,42 @@ class CameraScreen(BoxLayout):
         self.cap = cv2.VideoCapture(0)
         if not self.cap.isOpened():
             print("❌ Error: Could not open webcam.")
-            # --- ADDED: Show camera error on UI ---
             Clock.schedule_once(lambda dt: self._set_camera_status_text("Error: Webcam not found.", True))
         else:
             print("✅ Webcam opened successfully.")
             self.is_camera_active = True
             
-            # --- ADDED: Show loading status on UI ---
             Clock.schedule_once(lambda dt: self._set_camera_status_text("Loading Model...", True))
 
-            # --- START OF THREADING FIX ---
             threading.Thread(target=self.cv_processing_loop, daemon=True).start()
             Clock.schedule_interval(self.update_ui, 1.0 / 30.0)
-            # --- END OF THREADING FIX ---
 
     def _on_key_down(self, instance, keyboard, keycode, text, modifiers):
         """
         Handles keyboard shortcuts for app controls.
         """
-        # 40 = 'enter', 271 = 'numpad enter'
         if keycode == 40 or keycode == 271:
             self.trigger_speak()
-        # 42 = 'backspace'
         elif keycode == 42:
             self.delete_last_letter()
-        # Note: 'q' and 'esc' are handled by the confirm_exit_dialog
-        return True  # Stop the key from propagating further
+        return True
+
+    # --- MODIFIED: Autocorrect Function (forces lowercase for better matching) ---
+    def _autocorrect_text(self, text: str) -> str:
+        """
+        Corrects the spelling of a given string.
+        """
+        if not self.use_autocorrect or not self.spell:
+            return text
+        
+        # Force lowercase for better spell.correction() matching
+        words = text.lower().split() 
+        corrected = []
+        for w in words:
+            corrected_word = self.spell.correction(w)
+            corrected.append(corrected_word or w)
+        # Returns a lowercase string
+        return " ".join(corrected)
 
     def update_ui(self, dt):
         """
@@ -118,7 +139,6 @@ class CameraScreen(BoxLayout):
         It handles all the heavy webcam reading, landmark detection,
         and ML prediction logic.
         """
-        # --- ADDED: Flag to hide status on first frame ---
         is_first_frame = True
         
         while self.is_camera_active:
@@ -128,12 +148,10 @@ class CameraScreen(BoxLayout):
 
             ret, frame = self.cap.read()
             if not ret:
-                # --- ADDED: Handle webcam disconnect ---
                 self._set_camera_status_text("Webcam disconnected.", True)
                 time.sleep(0.5)
                 continue
 
-            # --- ADDED: Hide status label on first successful frame ---
             if is_first_frame:
                 self._set_camera_status_text("", False)
                 is_first_frame = False
@@ -159,13 +177,11 @@ class CameraScreen(BoxLayout):
                 self._update_sentence(predicted_letter)
                 self._draw_prediction_on_frame(frame, predicted_letter, confidence, hand_landmarks_for_drawing)
             else:
-                # --- Hand is gone, reset the logic (WITH LOCK) ---
                 with self.logic_lock:
-                    if self.stable_letter is not None: # Only reset if needed
+                    if self.stable_letter is not None: 
                         self.stable_letter = None
                         self.hold_start_time = None
                         self.prediction_history.clear()
-                        # --- ADDED: Reset progress bar ---
                         self._set_progress_bar_value(0) 
 
             self._draw_sentence_on_frame(frame)
@@ -192,7 +208,6 @@ class CameraScreen(BoxLayout):
             landmarks /= max_value
         return landmarks.flatten()
 
-    # --- NEW: Mainthread function for Camera Status ---
     @mainthread
     def _set_camera_status_text(self, text, is_visible):
         """
@@ -204,7 +219,6 @@ class CameraScreen(BoxLayout):
             self.ids.cam_status_label.opacity = 1.0 if is_visible else 0.0
             self.ids.cam_view.opacity = 0.0 if is_visible else 1.0
 
-    # --- NEW: Mainthread function for Progress Bar ---
     @mainthread
     def _set_progress_bar_value(self, value):
         """
@@ -231,27 +245,33 @@ class CameraScreen(BoxLayout):
             try:
                 most_common_prediction = Counter(self.prediction_history).most_common(1)[0][0]
             except IndexError:
-                self._set_progress_bar_value(0) # Reset on error
+                self._set_progress_bar_value(0) 
                 return 
 
-            # 1. Is this a new, stable letter?
             if most_common_prediction != self.stable_letter:
                 self.stable_letter = most_common_prediction
-                self.hold_start_time = time.time()  # Start the hold timer
-                self._set_progress_bar_value(0) # Reset bar for new letter
+                self.hold_start_time = time.time()  
+                self._set_progress_bar_value(0) 
             
-            # 2. Has the timer expired for the *first time*?
-            elif self.hold_start_time: # Check if timer is active
+            elif self.hold_start_time: 
                 elapsed = time.time() - self.hold_start_time
                 progress_percent = (elapsed / self.HOLD_TIME_TO_ADD) * 100
                 
-                # --- ADDED: Update progress bar ---
                 self._set_progress_bar_value(min(progress_percent, 100))
 
                 if elapsed >= self.HOLD_TIME_TO_ADD:
-                    # Add the letter
+                    
                     if self.stable_letter == 'space':
-                        self.sentence += ' '
+                        words = self.sentence.strip().split()
+                        if words:
+                            last_word = words[-1]
+                            corrected_word = self._autocorrect_text(last_word)
+                            # --- MODIFIED: Convert back to UPPERCASE for display ---
+                            words[-1] = corrected_word.upper() 
+                            self.sentence = " ".join(words)
+                        
+                        self.sentence += ' ' 
+                    
                     elif self.stable_letter: 
                         self.sentence += self.stable_letter.upper()
                     
@@ -259,7 +279,7 @@ class CameraScreen(BoxLayout):
                     
                     self.hold_start_time = None
                     self.prediction_history.clear()
-                    self._set_progress_bar_value(0) # Reset bar after adding
+                    self._set_progress_bar_value(0) 
 
 
     def _draw_prediction_on_frame(self, frame, letter, confidence, hand_landmarks):
@@ -296,7 +316,10 @@ class CameraScreen(BoxLayout):
         with self.logic_lock:
             if not self.sentence.strip():
                 return
+            
             sentence_to_speak = self.sentence
+            # Autocorrect the *final* sentence before speaking
+            sentence_to_speak = self._autocorrect_text(sentence_to_speak)
         
         if not self.tts_lock.acquire(blocking=False):
             print("🟡 TTS already in progress. Ignoring new request.")
@@ -351,7 +374,6 @@ class CameraScreen(BoxLayout):
             self.hold_start_time = None
             
             self._set_sentence_label("Hold a sign to begin")
-            # --- ADDED: Reset progress bar on clear ---
             self._set_progress_bar_value(0)
             print("Cleared sentence.")
         
@@ -369,8 +391,7 @@ class CameraScreen(BoxLayout):
 
 class SignTranslatorApp(MDApp):
     
-    # --- ADDED: Dialog variable ---
-    dialog = None
+    # --- DELETED: dialog = None ---
 
     def build(self):
         Window.icon = "app/assets/icon.ico"
@@ -379,40 +400,13 @@ class SignTranslatorApp(MDApp):
         self.theme_cls.primary_palette = "Cyan"
         self.theme_cls.accent_palette = "Amber"
 
-        Window.bind(on_request_close = self.confirm_exit_dialog)
+        # --- DELETED: Window.bind(on_request_close = self.confirm_exit_dialog) ---
 
         return CameraScreen()
     
-    # --- This is your existing code for the exit dialog ---
-    def confirm_exit_dialog(self, *args):
-        if not self.dialog:
-            self.dialog = MDDialog(
-                title = "Confirm Exit",
-                text = "Are you sure you want to quit?",
-                buttons = [
-                    MDFlatButton (
-                        text = "CANCEL",
-                        theme_text_color = "Custom",
-                        text_color = self.theme_cls.primary_color,
-                        on_release = lambda x: self.dialog.dismiss()
-                    ),
-                    MDRaisedButton(
-                        text = "QUIT",
-                        md_bg_color = self.theme_cls.primary_color,
-                        # --- TYPO FIX: Was 'self.perform.exit' ---
-                        on_release = self.perform_exit 
-                    ),
-                ],
-            )
-        self.dialog.open()
-        # Return True to cancel the default close event
-        return True
+    # --- DELETED: confirm_exit_dialog method ---
 
-    # --- This is your existing code for the exit dialog ---
-    def perform_exit(self, *args):
-        if self.dialog:
-            self.dialog.dismiss()
-        self.stop() # This will trigger on_stop()
+    # --- DELETED: perform_exit method ---
 
     def on_stop(self):
         print("🛑 App is stopping.")
@@ -421,8 +415,7 @@ class SignTranslatorApp(MDApp):
             # --- Unbind Keyboard Listener ---
             Window.unbind(on_key_down = self.root._on_key_down)
         
-        # --- Unbind Window Close Listener ---
-        Window.unbind(on_request_close = self.confirm_exit_dialog)
+        # --- DELETED: Window.unbind(on_request_close = self.confirm_exit_dialog) ---
 
 
 if __name__ == "__main__":
