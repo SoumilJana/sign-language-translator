@@ -21,3 +21,17 @@ to-do.txt
 
 # Local scripts
 run_auto.py
+
+# Node.js (for webapp)
+node_modules/
+webapp/node_modules/
+webapp/dist/
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+
+# Environment files
+.env
+.env.local
