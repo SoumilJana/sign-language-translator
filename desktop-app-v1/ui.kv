@@ -1,0 +1,135 @@
+<CameraScreen>:
+    orientation: "horizontal"
+    spacing: dp(8)
+    padding: dp(8)
+
+    canvas.before:
+        Color:
+            rgba: 0.02, 0.02, 0.05, 1 # Dark blue background
+        Rectangle:
+            size: self.size
+            pos: self.pos
+        Color:
+            rgba: app.theme_cls.primary_color
+            a: 0.4
+        Line:
+            width: 2
+            rectangle: (self.x, self.y, self.width, self.height)
+
+    # --- Left Panel: Camera and Translation ---
+    BoxLayout:
+        orientation: "vertical"
+        size_hint_x: 0.7
+        padding: dp(10)
+        spacing: dp(8)
+
+        # --- MODIFIED: Use a RelativeLayout to overlay text ---
+        RelativeLayout:
+            size_hint_y: 1.0 # Give it space
+
+            # Camera View
+            Image:
+                id: cam_view
+                allow_stretch: True
+                keep_ratio: True
+                size_hint: (1, 1) # Fill the layout
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                opacity: 0.0 # Start invisible
+                canvas.before:
+                    Color:
+                        rgba: 0.5, 0.5, 0.5, 0.5 # Border color
+                    Line:
+                        width: 1.5
+                        rectangle: (self.x, self.y, self.width, self.height)
+
+            # --- ADDED: Camera Status Label ---
+            MDLabel:
+                id: cam_status_label
+                text: "Initializing Camera..."
+                halign: "center"
+                valign: "center"
+                size_hint: (1, 1)
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+                theme_text_color: "Hint"
+                font_style: "H6"
+                opacity: 1.0 # Start visible
+
+        # Translation Title
+        MDLabel:
+            text: "TRANSLATION"
+            font_style: "H6"
+            bold: True
+            size_hint_y: None
+            height: self.texture_size[1]
+            padding_y: dp(5)
+
+        # Translation Sentence Box
+        MDCard:
+            md_bg_color: (0.8, 0.8, 0.8, 0.15) # Light grey box
+            size_hint_y: None
+            height: dp(60)
+            padding: dp(10)
+            radius: [8, 8, 8, 8]
+
+            MDLabel:
+                id: sentence_label
+                text: "Hold a sign to begin"
+                halign: "left"
+                valign: "center"
+                theme_text_color: "Custom"
+                text_color: app.theme_cls.primary_light
+                font_style: "H6"
+
+        # --- ADDED: Hold Progress Bar ---
+        MDProgressBar:
+            id: hold_progress
+            value: 0
+            size_hint_y: None
+            height: dp(5)
+            color: app.theme_cls.primary_color
+
+    # --- Right Panel: Info and Controls ---
+    BoxLayout:
+        orientation: "vertical"
+        size_hint_x: 0.3
+        padding: dp(10)
+        spacing: dp(10)
+
+        # Hand Signs Title
+        MDLabel:
+            text: "HAND SIGNS"
+            font_style: "H6"
+            bold: True
+            halign: "center"
+            size_hint_y: None
+            height: self.texture_size[1]
+
+        # Hand Signs Image
+        Image:
+            id: hand_signs_img
+            source: "app/assets/hand_signs.jpg"
+            allow_stretch: True
+            keep_ratio: True
+            mipmap: True
+
+        MDSeparator:
+            height: dp(1.5)
+
+        # Controls Title
+        MDLabel:
+            text: "CONTROLS"
+            font_style: "H6"
+            bold: True
+            halign: "center"
+            size_hint_y: None
+            height: self.texture_size[1]
+            padding_y: dp(5)
+
+        # Controls Text
+        MDLabel:
+            text: "Enter - speak sentence\nBackspace - delete letter"
+            halign: "left"
+            valign: "top"
+            size_hint_y: 1.0 # Allow it to fill remaining space
+            theme_text_color: "Secondary"
+            line_height: 1.7

@@ -1,39 +1,33 @@
-# 🖐️ Sign Language Translator
+# 🖐️ SignVision - Sign Language Translator
 
 ![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)
-![OpenCV](https://img.shields.io/badge/OpenCV-Enabled-green?logo=opencv)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.6-3178C6?logo=typescript)
 ![MediaPipe](https://img.shields.io/badge/MediaPipe-Integrated-orange?logo=google)
-![License](https://img.shields.io/badge/License-All%20Rights%20Reserved-red)
+![License](https://img.shields.io/badge/License-EULA-red)
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen)
 
 ---
 
 ## 🌍 Overview
 
-The **Sign Language Translator** is an AI-powered desktop application that converts hand signs into readable text in **real time**.
-Developed using **OpenCV**, **MediaPipe**, and a **custom-trained neural network**, it promotes inclusivity by enabling smoother communication between the **hearing** and **hearing-impaired** communities.
+**SignVision** is an AI-powered sign language translator that converts hand signs into readable text in **real time**. The project includes multiple versions:
 
-> 🎯 Focused on accessibility
-> 💡 Built for innovation
+| Version | Platform | Model | Status | Description |
+|---------|----------|-------|--------|-------------|
+| **Desktop v1** | Windows/Mac/Linux | MLP (sklearn) | ✅ Stable | Original release |
+| **Desktop v2** | Windows/Mac/Linux | MLP + T5 Grammar | ⚠️ Experimental | With AI grammar correction |
+| **Web App** | Browser | LSTM (ONNX) | ✅ Stable | Browser-based, no install needed |
+
+> 🎯 Focused on accessibility  
+> 💡 Built for innovation  
 > ⚙️ Powered by AI
-
----
-
-## 📑 Table of Contents
-
-1. [Quick Start](#-quick-start)
-2. [How It Works](#-how-it-works)
-3. [Tech Stack](#-tech-stack)
-4. [Training Scripts](#-training-scripts)
-5. [Installation](#-installation)
-6. [Author and Copyright](#-author-and-copyright)
-7. [Acknowledgements](#-acknowledgements)
 
 ---
 
 ## ⚡ Quick Start
 
-Run the following commands to set up and launch the application:
+### Option 1: Desktop App v1 (Stable - Recommended)
 
 ```bash
 # Clone repository
@@ -42,101 +36,165 @@ cd sign-language-translator
 
 # Create and activate virtual environment
 python -m venv venv
-venv\Scripts\activate   # Windows
-# or
-source venv/bin/activate  # macOS / Linux
+venv\Scripts\activate       # Windows
+# source venv/bin/activate  # macOS / Linux
 
 # Install dependencies
 pip install -r requirements.txt
 
-# Run application
+# Run stable version (from project root)
 python app/main.py
 ```
 
+### Option 2: Desktop App v2 (Experimental)
+
+```bash
+# Same setup as above, then:
+cd desktop-app-v2
+python main.py
+```
+
+> ⚠️ **Note:** v2 includes T5-based grammar correction which requires additional model downloads on first run.
+
+### Option 3: Web Application
+
+The web application is available in a separate folder. See [WebApp Setup](#web-application-setup) below.
+
 ---
 
-## 🧠 How It Works
+## 📁 Project Structure
 
-1. **Hand Detection:** MediaPipe identifies and tracks 3D hand landmarks.
-2. **Feature Extraction:** OpenCV processes frames and normalizes coordinates.
-3. **Prediction:** The neural network model classifies gestures into letters or words.
-4. **Output:** Recognized signs appear as readable text and can be converted to speech.
+```
+sign-language-translator/
+├── README.md               # This file
+├── LICENSE                 # EULA License
+├── requirements.txt        # Python dependencies
+│
+├── app/                    # 🖥️ MAIN DESKTOP APP (v1 - Stable)
+│   ├── main.py             # Run with: python app/main.py
+│   ├── ui.kv               # Kivy UI layout
+│   └── assets/             # Model & resources
+│
+├── desktop-app-v1/         # 📦 BACKUP of original GitHub release
+│   └── (same structure as app/)
+│
+├── desktop-app-v2/         # 🧪 EXPERIMENTAL VERSION
+│   ├── main.py             # With T5 grammar correction
+│   ├── sentence_generator.py # AI sentence generation
+│   ├── ui.kv
+│   └── assets/
+│
+├── training/               # 🧠 TRAINING SCRIPTS (Desktop App)
+│   ├── collect_data.py     # Capture hand landmarks
+│   ├── convert_dataset.py  # Prepare training data
+│   └── train_model2.py     # Train MLP classifier → model.p
+│
+├── newTrain/               # 🧠 TRAINING SCRIPTS (Web App - LSTM)
+│   ├── scripts/
+│   │   ├── collect_data.py
+│   │   ├── train_model.py
+│   │   └── convert_to_onnx.py
+│   └── README.md
+│
+└── docs/                   # 📚 DOCUMENTATION
+    ├── LSTM_TRAINING_PIPELINE.md
+    └── T5_INTEGRATION.md
+```
 
 ---
 
 ## 🧩 Tech Stack
 
-| Component             | Technology        | Purpose                                 |
-| --------------------- | ----------------- | --------------------------------------- |
-| 🧠 Core Engine        | **Python 3.10**   | Primary programming environment         |
-| 👋 Hand Tracking      | **MediaPipe**     | Landmark detection and gesture tracking |
-| 🖼️ Vision Processing | **OpenCV**        | Image capture and frame processing      |
-| 🎨 User Interface     | **Kivy / KivyMD** | Cross-platform GUI framework            |
-| 🔉 Speech Output      | **pyttsx3**       | Text-to-speech support                  |
+### Desktop Application
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| 🧠 Core | Python 3.10 | Primary language |
+| 👋 Hand Tracking | MediaPipe | Landmark detection |
+| 🖼️ Vision | OpenCV | Image processing |
+| 🎨 UI | Kivy / KivyMD | Cross-platform GUI |
+| 🔉 Speech | pyttsx3 | Text-to-speech |
+| ✨ Grammar (v2) | T5 Transformers | AI sentence correction |
+
+### Web Application
+
+| Component | Technology | Purpose |
+|-----------|------------|---------|
+| ⚛️ Frontend | React 19 + TypeScript | Modern web UI |
+| 🏗️ Build | Vite | Fast bundling |
+| 🧠 ML | ONNX Runtime Web | Browser inference |
+| 👋 Tracking | MediaPipe | Real-time detection |
 
 ---
 
-## 🧪 Training Scripts
+## 🧪 Training Your Own Model
 
-Located in the `training/` folder, these scripts allow you to build and train your own gesture recognition model.
+### For Desktop App (MLP)
+Scripts in `training/` folder:
+1. `collect_data.py` - Capture landmarks via webcam
+2. `convert_dataset.py` - Convert to training arrays
+3. `train_model2.py` - Train classifier → `model.p`
 
-| Script                 | Description                                                                                                                                             |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **collect_data.py**    | Captures hand landmark data through webcam. Each gesture (like A, B, or space) is labeled and saved as `.npy` files for dataset creation.               |
-| **convert_dataset.py** | Normalizes and converts collected landmark data into numerical arrays (`your_landmarks.npy`, `your_labels.npy`) suitable for model training.            |
-| **train_model2.py**    | Trains an MLPClassifier on the processed dataset, evaluates accuracy, and saves the trained model as `model.p`.                                         |
-| **runF2.py**           | Launches the live sign language translator. Loads the trained model, predicts gestures in real-time, displays text, and uses text-to-speech for output. |
+### For Web App (LSTM)
+Scripts in `newTrain/scripts/`:
+1. `collect_data.py` - Capture sequences
+2. `train_model.py` - Train LSTM network
+3. `convert_to_onnx.py` - Export → `model.onnx`
+
+See `docs/LSTM_TRAINING_PIPELINE.md` for details.
 
 ---
 
-## 💻 Installation
+## 🌐 Web Application Setup
 
-<details>
-  <summary>Expand installation steps</summary>
+The web app is in a separate `WebApp/` folder (not inside this repo).
 
 ```bash
-# Clone the repository
-git clone https://github.com/SoumilJana/sign-language-translator.git
-cd sign-language-translator
-
-# Create and activate a virtual environment
-python -m venv venv
-venv\Scripts\activate   # Windows
-# or
-source venv/bin/activate  # macOS / Linux
-
-# Install all dependencies
-pip install -r requirements.txt
-
-# Launch the application
-python app/main.py
+cd ../WebApp    # Navigate to WebApp folder
+npm install     # Install dependencies
+npm run dev     # Start dev server at http://localhost:5173
 ```
-
-</details>
 
 ---
 
-## 👨‍💻 Author and Copyright
+## 📚 Documentation
 
-> **Developed by:** [Soumil Jana](mailto:janasoumil1005@gmail.com)
-> **All Rights Reserved.**
+| Document | Description |
+|----------|-------------|
+| [LSTM Training](docs/LSTM_TRAINING_PIPELINE.md) | Web app model training |
+| [T5 Integration](docs/T5_INTEGRATION.md) | Grammar correction in v2 |
 
-⚠️ **Usage Policy:**
-This project is protected under copyright.
-You may **study and learn** from the code for educational purposes only.
-**Copying, redistribution, or modification** without explicit written permission is strictly prohibited.
+---
+
+## 👨‍💻 Author and License
+
+**Developed by:** [Soumil Jana](mailto:janasoumil1005@gmail.com)
+
+📧 Email: janasoumil1005@gmail.com  
+🔗 GitHub: [@SoumilJana](https://github.com/SoumilJana)
+
+### License (EULA)
+
+- ✅ Personal, non-commercial use allowed
+- ✅ Educational study permitted
+- ❌ Commercial use prohibited without permission
+- ❌ Redistribution/modification not allowed
+
+See [LICENSE](LICENSE) for full terms.
 
 ---
 
 ## 🏁 Acknowledgements
 
-* [MediaPipe](https://mediapipe.dev/) — Hand tracking and landmark detection
-* [OpenCV](https://opencv.org/) — Image processing and vision utilities
-* [Kivy](https://kivy.org/) — Modern GUI development for cross-platform applications
+* [MediaPipe](https://mediapipe.dev/) — Hand tracking
+* [OpenCV](https://opencv.org/) — Image processing
+* [Kivy](https://kivy.org/) — GUI framework
+* [Hugging Face](https://huggingface.co/) — T5 model
+* [ONNX Runtime](https://onnxruntime.ai/) — Browser ML
 
 ---
 
 <p align="center">
-  <b>“Technology is best when it brings people together.”</b><br>
+  <b>"Technology is best when it brings people together."</b><br>
   — Matt Mullenweg
 </p>
