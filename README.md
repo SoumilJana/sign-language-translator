@@ -15,7 +15,7 @@
 
 | Version | Platform | Model | Status | Description |
 |---------|----------|-------|--------|-------------|
-| **Desktop v1** | Windows/Mac/Linux | MLP (sklearn) | ✅ Stable | Original release |
+| **Desktop v1** | Windows/Mac/Linux | MLP (sklearn) | ⚠️ Experimental | Original release |
 | **Desktop v2** | Windows/Mac/Linux | MLP + T5 Grammar | ⚠️ Experimental | With AI grammar correction |
 | **Web App** | Browser | LSTM (ONNX) | ✅ Stable | Browser-based, no install needed |
 
@@ -27,7 +27,7 @@
 
 ## ⚡ Quick Start
 
-### Option 1: Desktop App v1 (Stable - Recommended)
+### Option 1: Desktop App v1 (Experimental)
 
 ```bash
 # Clone repository
